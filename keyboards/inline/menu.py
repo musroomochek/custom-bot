@@ -6,9 +6,6 @@ menu = InlineKeyboardMarkup(row_width=3,
                                     InlineKeyboardButton(text='Каталог', callback_data='catalog')
                                 ],
                                 [
-                                    InlineKeyboardButton(text='Корзина', callback_data='cart')
-                                ],
-                                [
                                     InlineKeyboardButton(text='Данные', callback_data='info')
                                 ],
                                 [
@@ -18,7 +15,3 @@ menu = InlineKeyboardMarkup(row_width=3,
                                     InlineKeyboardButton(text='ТГ канал', url='https://t.me/+k2CCiD1lgkgyZTBi')
                                 ]
                             ])
-
-
-
-

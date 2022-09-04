@@ -2,6 +2,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 
+from keyboards.inline.back import go_back
 from loader import dp
 from states.select_info import GetMessage
 from utils.db_api.commands.users_cnd import add_info_user
@@ -12,7 +13,7 @@ async def show_info(call: types.CallbackQuery):
     await call.message.edit_text('Введите ваши данные для отправки по форме: \n'
                                  'Полный адрес, \n'
                                  'Номер телефона, \n'
-                                 'Имя Фамилия')
+                                 'Имя Фамилия', reply_markup=go_back)
 
     await GetMessage.get_address.set()
 

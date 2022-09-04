@@ -5,3 +5,4 @@ class GetMessage(StatesGroup):
     info = State()
     message = State()
     get_address = State()
+    get_id = State()

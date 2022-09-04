@@ -1,3 +1,4 @@
+import aiofiles
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command, Text
@@ -5,10 +6,11 @@ from aiogram.utils.exceptions import BotBlocked
 
 from data import config
 from keyboards.inline.admin_keyboard import admin
-from loader import dp
+from loader import dp, bot
 from states.select_info import GetMessage
-from utils.db_api.commands.goods_cmd import add_item
+from utils.db_api.commands.goods_cmd import add_item, delete_goods_id
 from utils.db_api.commands.users_cnd import select_all_users
+from utils.misc.admin_helper import insert_txt
 
 
 @dp.message_handler(Command('admin'))
@@ -20,12 +22,11 @@ async def admin_cmd(message: types.Message):
         pass
 
 
-
-@dp.callback_query_handler(Text(equals='add_place'))
+@dp.callback_query_handler(Text(equals='add_item'))
 async def first_step_add(call: types.CallbackQuery):
     await call.message.edit_text('Супер! Отправь мне сообщение по следующей форме:\n\n'
                                  'Категория|Название|Описание|Цена|Ссылка на картинку\n\n'
-                                 '(можно вносить сразу несколько мест)')
+                                 '(можно вносить сразу несколько товаров)')
 
     await GetMessage.first()
 
@@ -54,25 +55,24 @@ async def last_step_add(message: types.Message, state: FSMContext):
         await message.answer(f'{counter} записей было добавлено.')
 
 
+@dp.callback_query_handler(Text(equals='delete_item'))
+async def delete_goods(call: types.CallbackQuery):
+    await insert_txt()
+    async with aiofiles.open('goods.txt', mode='rb') as f:
+        await bot.send_document(call.message.chat.id, f, caption='Введите ID товара для удаления')
+        await f.close()
+    await GetMessage.get_id.set()
 
 
-# @dp.callback_query_handler(Text(equals='delete_place'))
-# async def delete_place_admin(call: types.CallbackQuery):
-#     keyboard = await categories_kb()
-#     await call.message.edit_text('Выберите необходимую категорию для удаления.', reply_markup=keyboard)
-#
-#
-# @dp.callback_query_handler(Text(startswith='del_'))
-# async def delete_place_second(call: types.CallbackQuery):
-#     keyboard = await description_kb(category=call.data.split('_')[1])
-#     await call.message.edit_text('Выберите необхимое описание для удаления.', reply_markup=keyboard)
-#
-#
-# @dp.callback_query_handler(Text(startswith='get_'))
-# async def delete_place_last(call: types.CallbackQuery):
-#     data = call.data.split('_')[1]
-#     await delete_by_desc(description=data)
-#     await call.answer('Запись успешно удалена!', show_alert=True)
+@dp.message_handler(state=GetMessage.get_id)
+async def delete_second(message: types.Message, state: FSMContext):
+    await state.reset_state()
+    rows = message.text.split('\n')
+    counter = 0
+    for row in rows:
+        await delete_goods_id(row)
+        counter += 1
+    await message.answer(f'{counter} записей было удалено!')
 
 
 @dp.callback_query_handler(Text(equals='mailing'))
