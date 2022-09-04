@@ -9,8 +9,9 @@ class Users(Base):
     id = Column(Integer, primary_key=True)
 
     telegram_id = Column(BigInteger, unique=True)
-    username = Column(String)
-    address = Column(String)
-    phone = Column(String)
+    username = Column(String, nullable=True)
+    address = Column(String, nullable=True)
+    phone = Column(String, nullable=True)
+    name = Column(String, nullable=True)
 
     query: sql.Select

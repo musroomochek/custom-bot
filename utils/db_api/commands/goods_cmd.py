@@ -5,7 +5,7 @@ from utils.db_api.base import async_sessionmaker
 from utils.db_api.models.goods import Goods
 
 
-async def add_place(category,  product, description, price, photo):
+async def add_item(category,  product, description, price, photo):
     try:
         async with async_sessionmaker() as session:
             await session.merge(Goods(category=category, product=product, description=description, price=price, photo=photo))
